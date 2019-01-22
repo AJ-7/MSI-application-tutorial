@@ -96,7 +96,7 @@ The HTML views for angular components are stored under "assets/appviews". Based 
 
 The skeleton application contains UserService file which provides access to user information. Such information may be used by the application for roles, user properties, and execution context. The following code provides an example on how to access using information: 
 
-```
+```javascript
 if (userService.current) {
    this.availableUser(userService.current);
 } else {
@@ -113,19 +113,19 @@ The service caches the user in instance variable "current". The call to this ser
 
 Components may need to communicate with each other based on the actions and functionality. For such events, a service named NavService may be used to emit and catch global events within the component. The service is a singleton and may be used within any component for event messages. To register the event within the component, the following code should be executed within the ngOnInit function: 
 
-```
+```javascript
 this.eventFilterModified = this.navService.on('service:filter-modify').subscribe(data => this.onFilterModify(data));	
 ```
 
 Note that onFilterModify is an example function to be executed when an event of name "service:filter-modify" is emitted. When the component is destroyed, it is important to executed unsubscribe method of the event property. For example: 
 
-```
+```javascript
 this.eventFilterModified.unsubscribe();
 ```
 
 To emit events from any component, the following code should be used directly on the NavService instance: 
 
-```
+```javascript
 this.navReady.emit("service:filter-modify", someData);  	
 ```
 
