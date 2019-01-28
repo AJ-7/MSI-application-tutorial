@@ -1,0 +1,81 @@
+/* BLUE THEME FOR THE ON THE DOT */
+
+.dropdown-menu > li .fa {
+    font-size: 20px !important;
+}
+
+.otd-table {
+
+	> thead {
+		background: @otd-dark-grey;
+		
+		> tr > th {
+			color: @otd-light !important;
+		}
+	}
+
+}
+
+.otd-td-no-border {
+	> td {
+		border: 0 !important;
+	}
+	
+	> th {
+		border: 0 !important;
+	}
+}
+
+.otd-page-title {
+	display: inline-block;
+	
+	&.with-menu {
+		display: inline;
+		width: auto;
+		margin-right: 20px;
+	}
+}
+
+.otd-page-selector {
+	display: inline-block;
+}
+
+.otd-small {
+	font-size: 78%;
+}
+
+.otd-invoice-list-item {
+	
+	& .invoice-lnk {
+		font-weight: 700;
+		display: block;
+	}	
+	
+	& .invoice-date {
+		display: block;
+	}
+	
+	& .invoice-via {
+		font-style: italic;
+	}
+	
+	& .summary-line {
+		display: block;
+		
+		& .t {
+			font-weight: normal;
+			display: block;
+		}
+		
+		& .v {
+			font-weight: bold;
+			display: inline-block;
+			
+			& .price {
+				line-height: 18px;
+				font-size: 14px;
+				margin-right: 20px;
+			}
+		}	
+	}
+}

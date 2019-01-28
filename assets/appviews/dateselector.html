@@ -1,0 +1,14 @@
+<aside class="date-selector">
+	<div class="menu-hide-button" (click)="toggleSites()"><i class="fa fa-bars" aria-hidden="true"></i></div>
+	<ul class="alarm-menu title sm" [class.mute]="selectedPeriod !== null && !starting">
+		<li class="tour-main-time" ><input class="date-sel-input" id="dateFrom" type="text" [(ngModel)]="fromDateDisplay" /> -&nbsp; <input class="date-sel-input" id="dateTo" type="text" [(ngModel)]="toDateDisplay" /></li>
+	</ul>
+	<span class="menu-sep"></span>
+	<ul class="alarm-menu sm">
+		<li><a [class.active]="selectedPeriod == '1h'" (click)="periodSelected('1h', 1, 'hour')">1h</a></li>
+		<li><a [class.active]="selectedPeriod == '8h'" (click)="periodSelected('8h', 8, 'hours')">8h</a></li>
+		<li><a [class.active]="selectedPeriod == '1d'" (click)="periodSelected('1d', 1, 'day')">1d</a></li>
+		<li><a [class.active]="selectedPeriod == '7d'" (click)="periodSelected('7d', 7, 'days')">7d</a></li>
+		<li><a [class.active]="selectedPeriod == '30d'" (click)="periodSelected('30d', 30, 'days')">30d</a></li>
+	</ul>
+</aside>

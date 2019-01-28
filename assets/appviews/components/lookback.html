@@ -1,0 +1,84 @@
+<ng2-slim-loading-bar></ng2-slim-loading-bar>
+<div class="main-container mb40">
+	<div class="row metrics">
+	
+		<div *ngFor="let metric of metrics; let i = index;" class="{{calculatedCols}} mt40 donut-right-border" style="min-height: 150px">
+			<h4 class="tour-lookback-meter">{{metric.name}}</h4>
+			<div id="metric-guage-{{metric.KpiId}}" class="lp-guage"></div>			
+			<div id="metric-info-{{metric.KpiId}}" class="lp-guage-info">
+				<span class="val">{{metric.value}}</span>
+				<span class="of">{{metric.acceptable}} / {{metric.maximum}}</span>				
+			</div>
+		</div>
+	
+	</div>
+	
+	<div class="row metrics">
+		<div class="col-lg-12 mt40 top-border">
+			<h4 class="mt40">Target % Breakdown</h4>
+			<div class="row">
+				<div *ngFor="let priority of priorities" class="col-lg-4 mt20">
+					<div class="tour-lookback-breakdown lp-horizontal-meter">
+						<div class="actual-text">{{priority.Name}} {{priority.breakdown.actual}}%</div>
+						<div class="bg"><div class="val" [style.width]="priority.breakdown.actual + '%'" [style.background]="priority.breakdown.color"></div></div>
+						<div class="target"><div class="target-val" [style.width]="priority.breakdown.target + '%'"></div></div>
+						<div class="target-text">Target {{priority.breakdown.target}}%</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row metrics">
+		<div class="col-lg-12 mt40 top-border">
+			<h4 class="mt40">Top 10 Alarms</h4>
+			<div class="tile-row" *ngFor="let alarm of topActive">
+				<div
+					class="tour-lookback-top10alarms  dashboard-tile sm clickable mt10"
+					[style.background]="alarm.selected ? alarm.selectedColor : ''" 
+					(click)="showAlarmTrend(alarm)">	
+						<div class="rw">
+							<span class="val">{{alarm.AlarmUID}}</span>														
+							<span class="desc lg">{{alarm.AlarmCount}}</span>								
+						</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	
+	<div class="row" [class.hidden]="!selectedAlarmIds || selectedAlarmIds.length === 0">
+		<div class="col-lg-12">
+			<div class="alarm-chart whrd show">
+				<canvas id="selected-alarm-trend" height="300" class="alarm-chart-canvas"></canvas>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row metrics">
+		<div class="col-lg-12 mt40 top-border">
+			<h4 class="mt40">Top 10 Days</h4>
+
+			<div class="tile-row" *ngFor="let day of topDays">
+				<div
+					class="tour-lookback-top10days dashboard-tile sm clickable mt10"
+					[style.background]="day.selected ? day.selectedColor : ''" 
+					(click)="showDayTrend(day)">	
+						<div class="rw">
+							<span class="val">{{day.AlarmDateLabel}}</span>														
+							<span class="desc lg">{{day.AlarmCount}}</span>								
+						</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row" [class.hidden]="!selectedDays || selectedDays.length === 0">
+		<div class="col-lg-12">
+			<div class="alarm-chart whrd show">
+				<canvas id="selected-day-trend" height="300" class="alarm-chart-canvas"></canvas>
+			</div>
+		</div>
+	</div>
+	
+</div>

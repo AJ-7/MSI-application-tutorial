@@ -1,0 +1,217 @@
+<div class="row mt5">
+	
+	<div class="col-lg-12 alarm-list" [class.hidden]="configureSystem">
+		<div class="system-list-loader loader hidden"><i class="fa fa-circle-o-notch fa-spin fa-3x fa-fw ficon"></i><span class="sr-only">Loading...</span></div>
+		
+		<!-- header -->
+		<div class="row">
+			<div class="col-lg-6 alarm-head-col">
+				<span class="alarm-list-title">Configured Systems</span>
+			</div>
+			<div class="col-lg-6 alarm-list-actions">
+			</div>
+		</div>
+		
+		<div class="row" *ngFor="let system of systems; let even = even; let odd = odd">
+			
+			<div class="col-lg-12 alarm-row" [ngClass]="{ odd: odd, even: even }">
+				
+				<div class="row alarm-data-row">
+					<div class="col-lg-3">
+						<div class="rw">
+							<span class="desc">Name</span>
+							<span class="val">{{system.name}}</span>
+						</div>
+					</div>
+					<div class="col-lg-9">
+						<div class="rw">
+							<span class="desc">Description</span>
+							<span class="val">{{system.description}}</span>
+						</div>
+						<div class="btn-group pull-right">
+							<div class="btn btn-default"><i class="fa fa-download"></i></div>
+							<div class="btn" [class.btn-default]="!system.edit" [class.btn-primary]="system.edit"><i class="fa fa-pencil-square-o"></i></div>
+							<div class="btn btn-danger" (click)="deleteSystem(system.id)"><i class="fa fa-trash-o"></i></div>
+						</div>
+					</div>
+				</div>
+				
+				
+			</div>
+		</div>
+		
+	</div>
+	
+	
+	<!-- configure system -->
+	<div class="col-lg-12 alarm-list" [class.hidden]="!configureSystem">
+		<div class="system-list-loader loader hidden"><i class="fa fa-cog fa-spin fa-3x fa-fw ficon"></i><span class="sr-only">Loading...</span></div>
+		
+		<!-- general info-->
+		<div class="row">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="alarm-list-title">System Infomation</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				General system information to identify the system within the application. 
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<div class="row alarm-data-row">
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="desc">System Name</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Enter the name of the system..." [(ngModel)]="selectedSystem.name" /></span>
+						</div>
+					</div>
+					<div class="col-lg-8">
+						<div class="rw">
+							<span class="desc">Description</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Description..." [(ngModel)]="selectedSystem.description"/></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- data mapping -->
+		<div class="row mt40">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="alarm-list-title">Field mapping</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				Configuration for mapping alarm fields within the system to the fields exposed by the application. 
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<div class="row alarm-data-row">
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="desc">PI Data Server</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Find or select data server from configured SDK..." [(ngModel)]="selectedSystem.dataSource" /></span>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="desc">PI tag</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Find and select PI tag with alarm information..." [(ngModel)]="selectedSystem.tag"/></span>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="desc">Delimeter / Regex</span>
+							<span class="input"><input class="form-control inp-regex" type="text" placeholder="" [(ngModel)]="selectedSystem.delimeter"/><small>Regex strings must start with / character</small></span>
+						</div>
+					</div>
+					<div class="col-lg-12">
+						<div class="btn btn-default btn-flat btn-alarm-main-action" (click)="getTagData()" [class.hidden]="!configureSystem">Get Tag Data</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- regex -->
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<div class="row alarm-data-row">
+					<div class="col-lg-12">
+						<div class="rw">
+							<span class="desc">Tag value example for parsing <span [class.hidden]="selectedSystem.fields.length === 0">(* - field was not yet mapped)</span></span>
+							<span class="regex">
+								<div class="tag-selector" [class.hidden]="selectedSystem.fields.length !== 0">Please select tag from PI data server to continue</div>
+								<div class="tag-selector" [class.hidden]="selectedSystem.fields.length === 0">
+									<span *ngFor="let field of selectedSystem.fields" [class.sep]="field.separator" [class.val]="field.isvalue" [class.selected]="field.selected" (click)="fieldSelected(field)">
+										{{field.value}}<span class="require" [class.hidden]="field.separator || field.mapping">*</span>
+									</span>
+								</div>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- field configuration -->
+		<div class="row mb40 modify-row" *ngIf="selectedField">
+			<div class="col-lg-12 alarm-row even">
+				<div class="row field-modify-row">
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="desc">Field name</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Field name" [(ngModel)]="selectedField.name" /></span>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="desc">Field description</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Description" [(ngModel)]="selectedField.description" /></span>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="desc">Field Mapping</span>
+							<span class="dropdown">
+								<livepoint-dropdown #dropdownMapping 	[(items)]="fieldMapping" 
+																		[(emptyText)]="mappingText" 
+																		[allowDeselect]="true"
+																		(selected)="localFieldSelected($event)" 
+																		(removed)="resetCurrentMapping()"></livepoint-dropdown>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- field value mapping -->
+			<div class="col-lg-12 alarm-row odd" *ngIf="selectedField.item && selectedField.item.isMapped == 1">
+				<div class="row field-modify-row">
+					<div class="col-xs-12">
+						
+						<div class="box">
+							<div class="box-body no-padding">
+								<table class="table">
+									<tbody>
+										<tr>
+											<th>Source Field Value</th>
+											<th>Local Field Value Mapping</th>
+											<th><button class="btn btn-default btn-flat btn-xs pull-right" (click)="newFieldValue($event)"><i class="fa fa-plus"></i> New Mapping</button></th>
+										</tr>
+										<tr *ngFor="let field of selectedField.item.values">
+											<td class="input"><input class="form-control sm" type="text" placeholder="Source system value" [(ngModel)]="field.value" /></td>
+											<td class="dropdown sm">
+												<livepoint-dropdown [(items)]="selectedField.item.mapping" 
+																	[(emptyText)]="mappingValueText" 
+																	[(defaultItem)]="field.localValue"
+																	(selected)="localFieldValueSelected(field, $event)"></livepoint-dropdown>
+											</td>
+											<td>
+												<button class="btn btn-default btn-flat pull-right btn-table-action" (click)="removeFieldValue(field)"><i class="fa fa-trash"></i></button>
+											</td>
+										</tr>
+										<tr *ngIf="selectedField.item.values.length === 0">
+											<td colspan="3">This table allows you to provide a field value mapping between source system and local fields.</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						  
+					</div>
+				</div>
+			</div> <!-- end field mapping -->
+			
+			
+		</div>
+		
+	</div>
+		
+</div>
+
+<div class="row mt5">
+	<div class="col-lg-12 ta-left pa-rl-0">
+		<div class="btn btn-primary btn-flat btn-alarm-main-action" (click)="configureSystem = !configureSystem" [class.hidden]="configureSystem">Configure New System</div>
+		<div class="btn btn-primary btn-flat btn-alarm-main-action" (click)="saveSystem()" [class.hidden]="!configureSystem">Save</div>
+		<div class="btn btn-default btn-flat btn-alarm-main-action" (click)="configureSystem = !configureSystem" [class.hidden]="!configureSystem">Cancel</div>
+	</div>
+</div>

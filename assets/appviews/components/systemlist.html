@@ -1,0 +1,421 @@
+<div class="row mt5">
+	
+	<div class="col-lg-12 alarm-list" [class.hidden]="configureSystem">
+		
+		<!-- header -->
+		<div class="row">
+			<div class="col-lg-6 alarm-head-col">
+				<span class="tour-setup-systemlist alarm-list-title">Configured Systems</span>
+			</div>
+			<div class="col-lg-6 alarm-list-actions">
+			</div>
+		</div>
+		
+		<div class="row" *ngFor="let system of systems; let even = even; let odd = odd">
+			
+			<div class="col-lg-12 alarm-row" [ngClass]="{ odd: odd, even: even }">
+				
+				<div class="row alarm-data-row">
+					<div class="col-lg-3">
+						<div class="rw">
+							<span class="desc">Name</span>
+							<span class="val">{{system.name}}</span>
+						</div>
+					</div>
+					<div class="col-lg-9">
+						<div class="rw">
+							<span class="desc">Description</span>
+							<span class="val">{{system.description}}</span>
+						</div>
+						<div class="btn-group pull-right">
+							<div class="tour-setup-systemlist-edit btn" [class.btn-default]="!system.edit" [class.btn-primary]="system.edit" (click)="editSystem(system)"><i class="fa fa-pencil-square-o"></i></div>
+							<div class="tour-setup-systemlist-delete btn btn-danger" (click)="deleteSystem(system)"><i class="fa fa-trash-o"></i></div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		
+	</div>
+	
+	
+	<!-- configure system -->
+	<div class="col-lg-12 alarm-list" [class.hidden]="!configureSystem">	
+		
+		<!-- general info-->
+		<div class="row">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="alarm-list-title">System Infomation</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				General system information to identify the system within the application. 
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<div class="row alarm-data-row">
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="tour-setup-systemlist-name desc">System Name</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Enter the name of the system..." [(ngModel)]="selectedSystem.name" /></span>
+						</div>
+					</div>
+					<div class="col-lg-8">
+						<div class="rw">
+							<span class="tour-setup-systemlist-description desc">Description</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Description..." [(ngModel)]="selectedSystem.description"/></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- data mapping -->
+		<div class="row mt40">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="tour-setup-systemlist-fieldmapping alarm-list-title">Field mapping</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				Configuration for mapping alarm fields within the system to the fields exposed by the application. 
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<div class="row alarm-data-row">
+					<div class="col-lg-6">
+						<div class="rw">
+							<span class="tour-setup-systemlist-sourceserver desc">PI Data Server</span>
+							<span class="dropdown">
+								<livepoint-dropdown #PIServerSelection 	[(items)]="PIServers" 
+									[(defaultItem)]="selectedSystem.server"									
+									(selected)="PIServerSelected($event)"></livepoint-dropdown>									
+							</span>							
+						</div>
+					</div>					
+					<div class="col-lg-6">
+						<div class="rw">
+							<span class="tour-setup-systemlist-sourcetag desc">PI tag</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Find and select PI tag with alarm information..." [(ngModel)]="selectedSystem.tag"/></span>
+						</div>
+					</div>
+					<div class="col-lg-6 mt20">
+						<div class="rw">
+							<span class="tour-setup-systemlist-regex desc">Delimiter / Regex</span>
+							<span class="input"><input class="form-control inp-regex" type="text" placeholder="" 
+														[(ngModel)]="selectedSystem.delimeter" 
+														[disabled]="selectedSystem.type != 'delimeter'" readonly/><small>Regex strings must start with / character</small></span>
+						</div>
+					</div>
+					<div class="col-lg-6 mt20">
+						<div class="rw">
+							<span class="tour-setup-systemlist-tagtype desc">Tag type</span>
+							<span class="dropdown block">
+								<livepoint-dropdown #tagTypeSelection [(items)]="tagTypes" 
+															[(defaultItem)]="selectedSystem.tagType"
+															(selected)="tagTypeSelected($event)"></livepoint-dropdown>
+							</span>
+						</div>
+					</div>
+					<div class="col-lg-12 mt20">
+						<div class="tour-setup-systemlist-tagtreconype btn-group">
+							<div class="btn btn-flat btn-alarm-main-action" [class.btn-default]="selectedSystem.type != 'delimeter'" [class.btn-primary]="selectedSystem.type == 'delimeter'" (click)="selectSystemType('delimeter')">Delimited Tag</div>
+							<div class="btn btn-flat btn-alarm-main-action" [class.btn-default]="selectedSystem.type != 'integer'" [class.btn-primary]="selectedSystem.type == 'integer'" (click)="selectSystemType('integer')">Integer Tag</div>
+						</div>
+						<div class="tour-setup-systemlist-tagvaluebtn btn btn-default btn-flat btn-alarm-main-action" [class.hidden]="selectedSystem.type != 'delimeter'" (click)="getTagData()">Get Tag Data</div>						
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- regex -->
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<div class="row alarm-data-row">
+					<div class="col-lg-12" [class.hidden]="selectedSystem.type != 'delimeter'">
+						<div class="rw">
+							<span class="desc">Tag value example for parsing <span [class.hidden]="selectedSystem.fields.length === 0">(* - field was not yet mapped)</span></span>
+							<span class="tour-setup-systemlist-tagdata regex">
+								<div class="tag-selector" [class.hidden]="selectedSystem.fields.length !== 0">Please select tag from PI data server to continue</div>
+								<div class="tag-selector" [class.hidden]="selectedSystem.fields.length === 0">
+									<span *ngFor="let field of selectedSystem.fields" [class.sep]="field.separator" [class.val]="field.isvalue" [class.selected]="field.selected" (click)="fieldSelected(field)">
+										{{field.value}}<span class="require" [class.hidden]="field.separator || field.mapping">*</span>
+									</span>
+								</div>
+							</span>
+						</div>
+					</div>
+					<div class="col-lg-12" [class.hidden]="selectedSystem.type != 'integer'">
+						<div class="simple-list-container" *ngFor="let limit of selectedSystem.limits">
+							<div class="tour-setup-systemlist-editlimit simple-list-item console" (click)="configureLimit(limit)">	
+								<div *ngIf="!limit.compiled">
+									(select all parameters to configure this limit)
+								</div>
+								<div *ngIf="limit.compiled">
+									{{limit.display}}
+								</div>
+							</div>
+							<div class="simple-list-item-manage" [class.hidden]="!limit.manage">
+								<div class="row">
+									<div class="col-lg-4">
+										<div class="rw">
+											<span class="tour-setup-systemlist-editlimitvalue desc">Value</span>
+											<span class="input"><input class="form-control" type="text" placeholder="Tag value as float..." [(ngModel)]="limit.value" (change)="compileLimit(limit)" /></span>
+										</div>
+									</div>
+									<div class="col-lg-4">
+										<div class="rw">
+											<span class="tour-setup-systemlist-editlimitoperator desc">Operator</span>
+											<span class="dropdown">
+												<livepoint-dropdown #integerSignsSelection 	[(items)]="integerSigns" 
+																						[(emptyText)]="integerSignsText" 
+																						[allowDeselect]="false"
+																						(selected)="operatorSelected($event)"></livepoint-dropdown>
+											</span>
+										</div>
+									</div>
+									<div class="col-lg-4">
+										<div class="rw">
+											<span class="tour-setup-systemlist-editlimitpriority desc">Priority Mapping</span>
+											<span class="dropdown">
+												<livepoint-dropdown #prioritiesSelection 	[(items)]="priorities" 
+																						[(emptyText)]="prioritySelectText" 
+																						[allowDeselect]="false"
+																						(selected)="prioritySelected($event)"></livepoint-dropdown>
+											</span>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-lg-12 mt20">
+										<button class="btn btn-default btn-flat btn-sm" (click)="removeLimit(limit)"><i class="fa fa-trash"></i> Remove Limit</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="simple-list-container">
+							<div class="tour-setup-systemlist-createlimit simple-list-item action" (click)="newLimit()">
+								+ Create New Limit
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- field configuration -->
+		<div class="row mb40 modify-row" [class.hidden]="selectedField.index == null">					
+			<div class="col-lg-12 alarm-row even">
+				<div class="row field-modify-row">
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="tour-setup-systemlist-tagfield desc">Field name</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Field name" [(ngModel)]="selectedField.name" /></span>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="tour-setup-systemlist-tagdescription desc">Field description</span>
+							<span class="input"><input class="form-control" type="text" placeholder="Description" [(ngModel)]="selectedField.description" /></span>
+						</div>
+					</div>
+					<div class="col-lg-4">
+						<div class="rw">
+							<span class="tour-setup-systemlist-tagfieldmapping desc">Field Mapping</span>
+							<span class="dropdown block">
+								<livepoint-dropdown #fieldMappingSelection 	[(items)]="fieldMapping" 
+																		[(emptyText)]="mappingText" 
+																		[allowDeselect]="true"
+																		(selected)="localFieldSelected($event)" 
+																		(removed)="resetCurrentMapping()"></livepoint-dropdown>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- field value mapping -->
+			<div class="col-lg-12 alarm-row odd" *ngIf="selectedField.item && selectedField.item.isMapped == 1">
+				<div class="row field-modify-row">
+					<div class="col-xs-12">
+						
+						<div class="box">
+							<div class="box-body no-padding">
+								<table class="table">
+									<tbody>
+										<tr>
+											<th>Source Field Value</th>
+											<th>Local Field Value Mapping</th>
+											<th><button class="tour-setup-systemlist-tagfieldvaluemapping btn btn-default btn-flat btn-xs pull-right" (click)="newFieldValue($event)"><i class="fa fa-plus"></i> New Mapping</button></th>
+										</tr>
+										<tr *ngFor="let field of selectedField.item.values">
+											<td class="tour-setup-systemlist-tagfieldvaluesource input"><input class="form-control sm" type="text" placeholder="Source system value" [(ngModel)]="field.value" /></td>
+											<td class="tour-setup-systemlist-tagfieldvalueknown dropdown sm">
+												<livepoint-dropdown [(items)]="selectedField.item.mapping" 
+																	[(emptyText)]="mappingValueText" 
+																	[(defaultItem)]="field.localValue"
+																	(selected)="localFieldValueSelected(field, $event)"></livepoint-dropdown>
+											</td>
+											<td>
+												<button class="btn btn-default btn-flat pull-right btn-table-action" (click)="removeFieldValue(field)"><i class="fa fa-trash"></i></button>
+											</td>
+										</tr>
+										<tr *ngIf="selectedField.item.values.length === 0">
+											<td colspan="3">This table allows you to provide a field value mapping between source system and local fields.</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+						  
+					</div>
+				</div>
+			</div> <!-- end field mapping -->
+		</div>
+		
+		<div class="row mt40">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="tour-setup-systemlist-batchmapping alarm-list-title">Batch mapping</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				If applicable, enter the tag corresponding to Batch ID to perfom a mapping between alarms and batch. 
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6 alarm-row">
+				<div class="rw">
+					<span class="desc">Batch ID tag</span>
+					<span class="input"><input class="form-control" type="text" placeholder="Find and select batch id tag..." [(ngModel)]="selectedSystem.batchTag"/></span>
+				</div>
+			</div>
+			<div class="col-lg-6 alarm-row">
+				<div class="rw">				
+					<span class="tour-setup-systemlist-batchmappingtype desc">Batch selection criteria</span>
+					<span class="dropdown block">
+						<livepoint-dropdown #batchCriteriaSelection [(items)]="batchCriteria" 
+													[(defaultItem)]="selectedSystem.batchCriteria"
+													(selected)="batchCriteriaSelected($event)"></livepoint-dropdown>
+					</span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row mt40">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="tour-setup-systemlist-reconciliationrule alarm-list-title">Reconciliation rule</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				The reconciliation rule may be required by some system. If you are setting up a system which requires reconciliation, select the rule appropriate to your system.
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<livepoint-dropdown #reconciliationRulesSelection [(items)]="reconciliationRules" 				
+									[(emptyText)]="reconciliationRulesText" 
+									[(defaultItem)]="selectedSystem.reconciliationRule"
+									(selected)="reconciliationRulesSelected($event)"></livepoint-dropdown>
+			</div>
+		</div>
+		
+		<div class="row mt40">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="tour-setup-systemlist-notification alarm-list-title">Real-time alarm notifications?</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				If enabled, the alarms from this system will be sent directly to alarm distribution system(s) configured by the administrator. 
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<div class="row">
+				
+						<div class="col-lg-12">
+							<div class="rw">
+								<div class="btn-group">
+									<div class="btn" [class.btn-primary]="selectedSystem.notifications == 1"  [class.btn-default]="selectedSystem.notifications != 1" (click)="selectedSystem.notifications = 1">YES</div>
+									<div class="btn" [class.btn-primary]="selectedSystem.notifications == 0"  [class.btn-default]="selectedSystem.notifications != 0" (click)="selectedSystem.notifications = 0">NO</div>
+								</div>
+							</div>
+						</div>
+						
+				</div>
+			</div>
+		</div>
+		
+		<div class="row mt40">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="tour-setup-systemlist-active alarm-list-title">Active?</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				Active systems are displayed on the system list and included in all of the queries. You may deactivate the system at anytime to remove it from regular users.
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12 alarm-row">
+				<div class="row">
+				
+						<div class="col-lg-12">
+							<div class="rw">
+								<div class="btn-group">
+									<div class="btn" [class.btn-success]="selectedSystem.active == 1"  [class.btn-default]="selectedSystem.active != 1" (click)="selectedSystem.active = 1">Active</div>
+									<div class="btn" [class.btn-danger]="selectedSystem.active == 0"  [class.btn-default]="selectedSystem.active != 0" (click)="selectedSystem.active = 0">Not Active</div>
+								</div>
+							</div>
+						</div>
+						
+				</div>
+			</div>
+		</div>
+		
+		<div class="row mt40">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="tour-setup-systemlist-recovery alarm-list-title">Recovery</span>
+			</div>
+			<div class="col-lg-12 alarm-head-desc">
+				To run alarms recovery please enter recovery start and end time.
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-5 alarm-row">
+				<div class="rw">
+					<span class="tour-setup-systemlist-recoverystart desc">Recovery Start</span>
+					<span class="input"><input class="form-control" type="text" placeholder="Recovery Start" [(ngModel)]="selectedSystem.parameters.StartTime"/></span>
+				</div>
+			</div>
+			<div class="col-lg-5 alarm-row">
+				<div class="rw">
+					<span class="tour-setup-systemlist-recoveryend desc">Recovery End</span>
+					<span class="input"><input class="form-control" type="text" placeholder="Recovery End" [(ngModel)]="selectedSystem.parameters.EndTime"/></span>
+				</div>
+			</div>
+			<div class="col-lg-2 alarm-row">			
+				<div class="rw">
+					<span class="tour-setup-systemlist-recoveryrun desc">Recovery Control</span>
+					<div class="btn-group">
+						<div class="btn btn-flat btn-success" (click)="runRecovery(selectedSystem)">Run Recovery</div>
+					</div>					
+				</div>
+			</div>			
+		</div>	
+		<div class="row mt40">
+			<div class="col-lg-12 alarm-head-title">
+				<span class="tour-setup-systemlist-recoverylog alarm-list-title">Recovery Log</span>
+			</div>
+		</div>
+		<div class="row">		
+			<div class="simple-list-container" *ngFor="let log of selectedSystem.parameters.Log">			
+				<div class="simple-list-item console">	
+					<div>{{log}}</div>
+				</div>
+			</div>
+		</div>		
+	</div>
+		
+</div>
+
+<div class="row mt5 mb20">
+	<div class="col-lg-12 ta-left pa-rl-0">
+		<div class="tour-setup-systemlist-create btn btn-primary btn-flat btn-alarm-main-action" (click)="configureNew()" [class.hidden]="configureSystem">Configure New System</div>
+		<div class="tour-setup-systemlist-save btn btn-primary btn-flat btn-alarm-main-action" (click)="saveSystem()" [class.hidden]="!configureSystem">Save</div>
+		<div class="btn btn-default btn-flat btn-alarm-main-action" (click)="cancelSave()" [class.hidden]="!configureSystem">Cancel</div>
+	</div>	
+</div>

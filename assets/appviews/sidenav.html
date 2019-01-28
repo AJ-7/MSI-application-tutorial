@@ -1,0 +1,72 @@
+<header class="main-header">
+	<nav class="navbar navbar-static-top" role="navigation">
+		<!--
+		<a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+			<span class="sr-only">Navigation</span>
+		</a>
+		-->
+		<div class="lpicon">
+			<a routerLink="/example/management">
+				<img alt="lp" class="lpicon-img" src="/core/images/logo_sq.png"/>
+			</a>
+		</div>
+		<ul class="alarm-menu title">
+			<li i18n="@@headerTitle">{{config.displayedName}}</li>			
+		</ul>
+		<span class="menu-sep"></span>
+		<ul class="tour-main-menu alarm-menu">
+			<li><a routerLink="/example/management" routerLinkActive="active">Management</a></li>
+		</ul>
+		<div class="navbar-custom-menu">
+			<ul class="nav navbar-nav">
+				<li id="loader-bar" class="loader-bar hidden">
+					<div><i class="fa fa-circle-o-notch fa-spin fa-fw ficon"></i><span class="sr-only">Loading...</span></div>
+				</li>
+				<li>
+					<a href="/" style="font-size: 20px">
+						<i class="fa fa-home"></i>
+					</a>
+				</li>
+				<li class="dropdown quick-menu">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="font-size: 20px">
+						<i class="fa fa-th"></i>
+					</a>
+					<ul class="dropdown-menu" style="width: 320px">
+						<li class="header">Applications</li>
+						<li>
+							<ul class="menu">
+								<li *ngFor="let app of applications">
+									<a (click)="switchApplication(app)" style="padding: 10px; cursor: pointer">
+										<h3 style="margin-bottom: 0">
+											{{app.db.displayedName}}
+											<i class="pull-right {{app.raw.fontIcon}}"></i>
+										</h3>
+										<small style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; color: #888; width: 90%">{{app.db.description}}</small>
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li class="dropdown user user-menu hidden-xs">
+					<a href="#" class="dropdown-toggle toggle-btn clickable" data-toggle="dropdown">
+						<span>{{userName}}</span>
+					</a>
+					<ul class="dropdown-menu" *ngIf="user">
+						<li class="user-header-alarms">
+							<p>{{user.name}}<br/><span style="font-size: 0.7em">Logged in as {{user.role}}</span></p>
+						</li>
+						<li class="user-footer">
+							<div class="pull-right">
+								<a (click)="signOut()" class="btn btn-default btn-flat">Sign out</a>
+							</div>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	
+</header>
+
+
