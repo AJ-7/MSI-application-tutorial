@@ -12,6 +12,7 @@ var forms_1 = require("@angular/forms");
 var dropdown_component_1 = require("./components/dropdown.component");
 var codepreview_component_1 = require("./components/codepreview.component");
 var codepreview2_component_1 = require("./components/codepreview2.component");
+var elementsearch_component_1 = require("./components/elementsearch.component");
 var angular2_select_1 = require("angular2-select");
 var ng2_slim_loading_bar_1 = require("ng2-slim-loading-bar");
 var ngx_pagination_1 = require("ngx-pagination");
@@ -34,7 +35,8 @@ var SharedModule = (function () {
             declarations: [
                 dropdown_component_1.DropdownComponent,
                 codepreview_component_1.CodePreviewComponent,
-                codepreview2_component_1.CodePreviewComponent2
+                codepreview2_component_1.CodePreviewComponent2,
+                elementsearch_component_1.ElementSearchComponent
             ],
             providers: [
                 request_service_1.RequestService,
@@ -44,6 +46,7 @@ var SharedModule = (function () {
                 dropdown_component_1.DropdownComponent,
                 codepreview_component_1.CodePreviewComponent,
                 codepreview2_component_1.CodePreviewComponent2,
+                elementsearch_component_1.ElementSearchComponent,
                 ng2_slim_loading_bar_1.SlimLoadingBarModule,
                 forms_1.FormsModule,
                 ngx_pagination_1.NgxPaginationModule,

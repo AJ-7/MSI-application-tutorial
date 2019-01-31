@@ -1,97 +1,59 @@
-
-var isRunning = false;
-var isFinished = false;
-
-var edge = require('edge');
-var clrMethod = edge.func({
-    assemblyFile: 'C:\\mirabo\\Livepointx\\LPXCore\\apps\\alarms\\lscservices\\XmlImporter.dll',
-    typeName: 'XmlImporter.Class1',
-    methodName: 'Invoke' 
-});
-
 module.exports = {
 
 	testFunction: function(context, callback) {
 		var log = context.log;
+		var PIFunctions = context.PI;
+		var AFFunctions = context.AF;
+		
 		log.info("testFunction called");
 		
-		/*
-		var request = {
-			"ID": "FindEventFrames",
-			"EnableLog": true,
-			"Server": "localhost",
-			"Database": "CPV Data Testing",
-			"StartTime": "*-10y",
-			"EndTime": "*",
-			"LoadToDepth": 0,
-			"EventFrameFilters": [
-				{
-					"Name": "*"
-				}
-			],
-			"EventFrameFields": [ "Name", "StartUTC", "EndUTC" ]
-		}
-		context.AF.FindEventFrames(request, callback);
-		*/
+		var searchel_request = {
+			ID: "18",
+			EnableLog: false,
+			Server: "localhost",
+			Database: "LPX_ITMonitoring",
+			LoadToDepth: 0,
+			ReturnFullPath: false,
+			ReturnRoot: false,
+			ReturnAttributes: 'All',
+
+			SearchTree: true, 
+			SortOrder: 'Descending',
+			ElementFilters: [{ Name: '*'}],
 		
-		 var data = { 
-			connectionString: "Server=localhost\\SQLEXPRESS;Database=LPX;Trusted_Connection=Yes;", 
-			insertComand: "INSERT INTO dbo.testing (fucker) VALUES(@fucker)", 
-			param: 'FUCKER FROM LSC FUCK THIS SHIT!!!!'
+			ElementFields: ["Name", 'Guid', 'HasChildren', 'HasAttributes', 'ParentGuid', 'Parents', 'Security'],
+			AttributeFields: ['Name', 'DataReference', 'Value', 'State','IsConfigured', 'HasChildren', 'OwnerGuid', 'OwnerType', 'UOM', 'EngUnits']
 		};
-
-		clrMethod(data, function (error, result) {
-			if (error) { callback(error, result); return; }
-			callback(null, {status:200, message: result, err: error});
-		});
-
-	}, 
-	
-	runTask: function (context, callback) {
-		var log = context.log;
-		isRunning = true;
-		var request = {
-			"ID": "FindEventFrames",
-			"EnableLog": true,
-			"Server": "localhost",
-			"Database": "CPV Data Testing",
-			"StartTime": "*-10y",
-			"EndTime": "*",
-			"LoadToDepth": 0,
-			"EventFrameFilters": [
-				{
-					"Name": "*"
-				}
-			],
-			"EventFrameFields": [ "Name", "StartUTC", "EndUTC" ]
-		}
-		log.info('firing af request');		
-		context.AF.FindEventFrames(request, function(err, res) {
-		log.info('af request finished');		
-			isRunning = false;
-			isFinished = true;
-			callback(null);
-		});
 		
-/*		
-		if (!isRunning && !isFinished) {
-			log.info('task is not running, executing task');
-			isRunning = true;
-			setTimeout(function() {
-				isRunning = false;
-				isFinished = true;
-				log.info('task finished after 20 seconds');
-				callback(null);
-			}, 20000);
-		} else if (isFinished) {
-			log.info('task already finished');
-			callback(null);
-		}
-*/		
-	}, 
+		AFFunctions.FindElements(searchel_request, function(err, res) {
+			callback(err, {status:200, response: res});
+		});
+	},
 	
-	taskStatus: function (context, callback) {
-		callback(null, {isRunning:isRunning, isFinished:isFinished});
-	}
-
+	getAttributeData: function(context, callback) {
+		var body = context.body;
+		var PIFunctions = context.PI;
+		var AFFunctions = context.AF;
+		
+		var searchel_request = {
+			"ID": "GetAttributeData",
+			"EnableLog": false,
+			"Server": body.server,
+			"Database": body.db,
+			"Method": "PlotValues",
+			"Count": 200,
+			"StartTime": "*-1m",
+			"EndTime": "*",
+			"ValueFields": ["TimeStamp", "TimeUTC", "TimeTicks", "Value"],
+			"Attributes": [
+				{
+					"Persist": body.persist
+				}
+			]
+		};
+		
+		AFFunctions.GetAttributeData(searchel_request, function(err, res) {
+			callback(err, {status:200, response: res, raw: JSON.stringify(searchel_request)});
+		});
+	}	
 };

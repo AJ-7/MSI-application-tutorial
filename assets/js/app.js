@@ -21,6 +21,7 @@ var app = {
 	alert: null,
 	dateFormat: 'ddd, MMM Do YYYY, HH:mm:ss',
 	dateFormatAlarm: 'MMM, Do YYYY HH:mm:ss',	
+	dateFormatAlarm2: 'HH:mm:ss',	
 	defaultPalatte:  ["#253031", '#3273AD', '#ACCFE0', '#FFB600', '#F52F57', '#E8E8E8'],
 	lineChartColors: ['rgba(37,48,49,1)'],
 	lineChartColorsRandom: ['#4D4D4D', '#5DA5DA', '#FAA43A', '#60BD68', '#F17CB0', '#B2912F', '#B276B2', '#DECF3F', '#F15854', '#253031', '#F9C218', '#0B3E83', '#253031', '#F25F5E', '#FBFFB2', '#647F58', '#213F21', '#102542', '#9AADBF', '#D7CEB2'],

@@ -1,15 +1,66 @@
 <ng2-slim-loading-bar></ng2-slim-loading-bar>
 
-<livepoint-code-preview #codePreviewComponent (loaded)="codePreviewLoaded($event)"></livepoint-code-preview>
+<livepoint-element-search #elementSearchComponent (loaded)="searchLoaded($event)" (selected)="elementSelected($event)" [showMultiple]="false"></livepoint-element-search>
 
 <div class="main-container">
 
 	<div class="row mt10">
 		<div class="col-lg-12 alarm-list nbp">
-	
-			main content
-		
+			<div class="row">
+				<div class="col-lg-12 alarm-row-realtime">
+					<div class="simple-list-item">
+						Element search example via SOLR + AF Driver data call
+					</div>
+				</div>
+				
+				<div class="col-lg-12 alarm-row odd">
+					<div class="row alarm-data-row">
+						<div class="col-lg-12">
+							<h4>Description</h4>
+							<span>By clicking the button below a control will open to perform nested search from within SOLR specified by setting.js file. The element should be selected up to the point where any of the items has attributes (identified by <i class="fa fa-link"></i> icon). Once selected, the attribute list will be populated.</span>
+						</div>
+						<div class="col-lg-12 mt20">
+							<button class="btn btn-default btn-sm" (click)="openElementSearch()">Open Element Search (SOLR Based)</button>
+						</div>
+					</div>
+					
+					<div class="row setting-list-header">
+						<div class="col-lg-12">
+							<h4>Result</h4>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="col-lg-3 setting-list-properties">
+							<div [ngClass]="{ hidden: (attributes.length != 0) }">
+								Select the the attribute about to perform data query. 
+							</div>
+							<div [ngClass]="{ hidden: (attributes.length == 0) }">
+								<ul class="attribute-list" style="max-height: 400px; overflow-y: scroll;">
+									<li *ngFor="let attr of attributes">
+										{{ attr.name2 }}
+										
+										<div class="icon-menu-sort pull-right" style="margin-top: -5px">
+											<i class="fa fa-area-chart" (click)="displayChart(attr)"></i>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="col-lg-9" [ngClass]="{ hidden: (attributes.length == 0) }">
+							<div class="alarm-chart" style="margin-top: 0; height: 400px;">
+								<canvas id="chart_1" height="400" class="alarm-chart-canvas"></canvas>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				
+			</div>
+			
+			
 		</div>
+
 	</div>
 	
 	

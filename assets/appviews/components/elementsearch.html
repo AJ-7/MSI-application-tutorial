@@ -1,0 +1,76 @@
+<ngx-smart-modal #searchData identifier="searchData">
+
+	<div class="modal-container">
+	
+		<div class="row">
+			<h4 style="margin: 0">Element Search</h4>
+		</div>
+	
+		<div class="row mt20">
+			<div class="col-lg-12 alarm-row">
+				<div class="rw">
+					<span class="desc">Search element and sub-elemnets</span>
+					<span class="input"><input class="form-control" type="text" placeholder="Enter the element path..." [(ngModel)]="searchPath" (ngModelChange)="searchPathChanged($event)" /></span>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row mt20">
+			<div class="col-lg-12 alarm-list nbp">
+			
+				<div class="row mb10" *ngIf="showWarning">
+					<div class="col-lg-12 alarm-row" style="padding: 3px 3px 3px 15px; background: rgba(224,187,0,0.3); font-weight: bold;">
+						<span>Please note, selecting any element from this list other than currently assigned will <b>reset</b> all of the preferences set by administrators and users.</span>
+					</div>
+				</div>
+			
+				<div class="row" *ngIf="foundElements.length === 0">
+					<div class="col-lg-12 alarm-row even" style="padding: 3px 3px 3px 15px">
+						<h5>No elements to display. Please refine your search.</h5>
+					</div>
+				</div>
+			
+				<div class="row" *ngFor="let el of foundElements | paginate: { id: 'elementListPaging',
+                                                      itemsPerPage: pageSize,
+                                                      currentPage: currentPage,
+                                                      totalItems: totalElements}; let even = even; let odd = odd;">
+					<div class="col-lg-12 alarm-row-realtime" [ngClass]="{ odd: odd, even: even }">
+						<div class="simple-list-item" (click)="selectedItem(el)">
+							<i class="fa fa-info-circle" data-toggle="tooltip" data-html="true" data-placement="right" title="{{el.info}}"></i>
+							<i class="fa fa-tag" data-toggle="tooltip" data-placement="right" title="{{el.attrTitle}}" [class.mutedi]="!el.hasattributes"></i>
+							<i class="fa fa-link" data-toggle="tooltip" data-placement="right" title="Select this element" [class.mutedi]="!el.hasattributes" (click)="chooseItem($event, el)"></i>
+							<span class="item-name">
+								{{el.path}}
+							</span>
+							
+							<div class="icon-menu pull-right">
+								<i class="fa fa-chevron-right" data-toggle="tooltip" data-placement="left" title="Click for child elements" *ngIf="el.haschildren"></i>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+			
+			</div>
+			
+			<div class="col-lg-12 mt20 tcenter" [class.hidden]="totalElements === 0">
+			<pagination-controls id="elementListPaging" 
+								 (pageChange)="pageChanged($event)"
+									  maxSize="9"
+									  previousLabel="Previous"
+									  nextLabel="Next"></pagination-controls>
+			</div>
+			
+		</div>
+		
+		<div class="row" *ngIf="foundElements.length > 1 && showMultiple">
+			<div class="col-lg-12 alarm-row" style="padding: 3px 3px 3px 15px">
+				<span style="display: block; margin-bottom: 10px;">Clicking the button below will create multiple element mapping with default preference for up to 200 elements containing attributes based on the original query. This operation might take a few minutes and is executed as independent task.</span>
+				<button class="btn btn-default" (click)="chooseMultipleItem($event)"><i class="fa fa-tag"></i> Map multiple elemets</button>
+			</div>
+		</div>
+		
+	
+	</div>
+	
+</ngx-smart-modal>

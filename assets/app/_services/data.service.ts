@@ -25,6 +25,10 @@ declare var app:any;
 export class DataService {
 	
 	private recordAuditEventUrl = '/audit/create';
+	private findElementUrl = '/arcfg/data/findElement?q=';
+	private findElementByParentUrl = '/arcfg/data/findElementByParent?q=';
+	private findElementAttributesByIdUrl = '/arcfg/data/findElementAttributesById?q=';
+	private getDataUrl = '/lsc/example/get-data'
 	
 	/**
 	* DataService constructor
@@ -77,6 +81,21 @@ export class DataService {
 		return this.requestService.postRequest(this.recordAuditEventUrl, data);
 	}
 	
+	findElement(q:string, start:number): Observable<any[]> {
+		return this.requestService.getRequest(this.findElementUrl + q + '&start=' + start);
+	}
+	
+	findElementByParent(q:string, start:number): Observable<any[]> {
+		return this.requestService.getRequest(this.findElementByParentUrl + q + '&start=' + start);
+	}
+	
+	findElementAttributesById(q:string): Observable<any[]> {
+		return this.requestService.getRequest(this.findElementAttributesByIdUrl + q);
+	}
+	
+	getAttributeData(data): Observable<any[]> {
+		return this.requestService.postRequest(this.getDataUrl, data);
+	}
 }
 
 

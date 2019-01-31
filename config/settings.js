@@ -11,6 +11,7 @@ module.exports = {
 	
 	serviceConfig: {
 		/* dbConnectionString: 'Driver={SQL Server Native Client 11.0};Server=localhost\\SQLEXPRESS;Database=LP_EXAMPLE;Trusted_Connection=Yes;', */
+		indexServer: 'http://tqsdevlp-prd:8983'
 	}
 	
 	

@@ -36,6 +36,10 @@ var DataService = (function () {
         this.http = http;
         this.requestService = requestService;
         this.recordAuditEventUrl = '/audit/create';
+        this.findElementUrl = '/arcfg/data/findElement?q=';
+        this.findElementByParentUrl = '/arcfg/data/findElementByParent?q=';
+        this.findElementAttributesByIdUrl = '/arcfg/data/findElementAttributesById?q=';
+        this.getDataUrl = '/lsc/example/get-data';
     }
     /**
     * Event: Fired when error is occured. Error handling for data service
@@ -75,6 +79,18 @@ var DataService = (function () {
     */
     DataService.prototype.recordAuditEvent = function (data) {
         return this.requestService.postRequest(this.recordAuditEventUrl, data);
+    };
+    DataService.prototype.findElement = function (q, start) {
+        return this.requestService.getRequest(this.findElementUrl + q + '&start=' + start);
+    };
+    DataService.prototype.findElementByParent = function (q, start) {
+        return this.requestService.getRequest(this.findElementByParentUrl + q + '&start=' + start);
+    };
+    DataService.prototype.findElementAttributesById = function (q) {
+        return this.requestService.getRequest(this.findElementAttributesByIdUrl + q);
+    };
+    DataService.prototype.getAttributeData = function (data) {
+        return this.requestService.postRequest(this.getDataUrl, data);
     };
     DataService = __decorate([
         core_1.Injectable(),

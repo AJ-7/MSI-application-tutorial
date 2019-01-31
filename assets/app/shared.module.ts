@@ -5,6 +5,7 @@ import { FormsModule }    from '@angular/forms';
 import { DropdownComponent } from './components/dropdown.component';
 import { CodePreviewComponent } from './components/codepreview.component';
 import { CodePreviewComponent2 } from './components/codepreview2.component';
+import { ElementSearchComponent } from './components/elementsearch.component';
 import { SelectModule } from 'angular2-select';
 import { SlimLoadingBarModule } from 'ng2-slim-loading-bar';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -25,7 +26,8 @@ import { NgxSmartModalModule } from 'ngx-smart-modal';
     declarations: [
 	  DropdownComponent,
 	  CodePreviewComponent,
-	  CodePreviewComponent2
+	  CodePreviewComponent2,
+	  ElementSearchComponent
     ],
     providers: [
 		RequestService,
@@ -35,6 +37,7 @@ import { NgxSmartModalModule } from 'ngx-smart-modal';
 	  DropdownComponent,
 	  CodePreviewComponent,
 	  CodePreviewComponent2,
+	  ElementSearchComponent,
 	  SlimLoadingBarModule,
 	  FormsModule,
 	  NgxPaginationModule,
