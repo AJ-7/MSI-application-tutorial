@@ -216,4 +216,39 @@ In the example above, the **res** object is the json object representing the dri
 
 _NOTE: The following code assumes success of function invocation. However, the **res** element may return an interal error with description and error stack. In general, the AF function error are handled on the client side for easier debugging and more information, but the developer may choose to example the **res** object and perform additional error logging from within the LSC service._
 
+### AF Attribute Data
+
+The following example performs a call to AF driver function to get the values of attribute based on the **persist** property. The attribute data may be returned through other properties such as GUID and full path. For more information, please check driver documentation. 
+
+_NOTE: The common use of this function is to retrieve a data from the attribute(s) based on previous search performed on either the element tree or an event frame. For example, the tree of elements may be treversed by the application front-end and selected attributes are displayed as part of a line chart view._
+
+```javascript
+var body = context.body;
+var PIFunctions = context.PI;
+var AFFunctions = context.AF;
+
+var searchel_request = {
+	"ID": "GetAttributeData",
+	"EnableLog": false,
+	"Server": body.server,
+	"Database": body.db,
+	"Method": "PlotValues",
+	"Count": 200,
+	"StartTime": "*-1m",
+	"EndTime": "*",
+	"ValueFields": ["TimeStamp", "TimeUTC", "TimeTicks", "Value"],
+	"Attributes": [
+		{
+			"Persist": body.persist
+		}
+	]
+};
+
+AFFunctions.GetAttributeData(searchel_request, function(err, res) {
+	callback(err, {status:200, response: res});
+});
+```
+
+In the example below, the front-end application is sending the **persist** string as part of the POST body to LSC service. The attribute data is then selected by specifying the appropriate method of return values (ex: PlotValues), start time, and persist string. In production application, the same call would apply but allow for more dynamic properties to be sent from the client such as start and end ties, server and database, and other properties based on the application requirement and driver support. 
+
 ## Access to Indexing
