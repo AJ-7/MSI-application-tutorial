@@ -252,3 +252,46 @@ AFFunctions.GetAttributeData(searchel_request, function(err, res) {
 In the example below, the front-end application is sending the **persist** string as part of the POST body to LSC service. The attribute data is then selected by specifying the appropriate method of return values (ex: PlotValues), start time, and persist string. In production application, the same call would apply but allow for more dynamic properties to be sent from the client such as start and end ties, server and database, and other properties based on the application requirement and driver support. 
 
 ## Access to Indexing
+
+Indexing is the method of recording data from slower data sources such as AF in order to query and operate on the data faster. Livepoint platform utilizes mostly Apache SOLR for indexing needs although other stores may easily be integrated. The following section provides an example of using SOLR indexing store, but the patterns used may be applied to other indexing stores and advanced functionality. 
+
+_REQUIRED: Prior to working with the example, an indexed SOLR code must be configured and populated with test data. The official documentation for indexing for both 1.3x and Index Interface outline the details on performing the indexing._
+
+### SOLR Server-side access
+
+The SOLR service is a separate services managed by Apache software and does not rely on the Livepoint platform to function. In most cases, the indexing server is closed to an outside and is accessible only by the Livepoint server hosting the application. For that reason, the access to SOLR data is performed on the service side using controller functionality of applications described earlier in this document. 
+
+Several access mehods may be used in order to get the data from indexed core such as official SOLR javascript library or an HTTP request to SOLR interface. The example application is using the HTTP to get the data to remove the need for SOLR library dependency within the main platform modules. 
+
+_NOTE: You should be familiar to SOLR syntax and data structure prior to working with this example. The example written in this document outlines the use of data access withn the application._
+
+The following method of sailes.js controller, will pull the data from indexed AF elements. The code below includes functionality to deal with wildcard character and is used within the example application. 
+
+```javascript
+findElement: function(req, res) {
+	var q = req.query.q;
+	var start = req.query.start || '0';
+
+	var wild = q.split('*');
+	if (wild.length > 2) {
+		q = "";
+		wild.forEach(function(w) {
+			if (w.length > 0) {
+				q += "*" + w + "* AND namepath:";
+			}
+		});
+
+		q = q.substr(0, q.length - 14);
+	}
+
+	var url = settings.serviceConfig.indexServer + '/solr/element/select?q=namepath:' + q + '&indent=on&wt=json&rows=10&start=' + start;
+	http.get(url,function(err,resultData){
+		var solrData = JSON.parse(resultData.body);   
+		return res.json(solrData);
+	});  
+ }
+```
+
+The SOLR data is returned in the format specified by indexing service and includes meta information and body of the returned elements. Since the HTTP GET request returned a string in this case (not json object), **JSON.parse** method must be used to parse the return stream and pass it back to the client. 
+
+_NOTE: The example application includes the call to this function as the first call to find elements based on the namepath specified by the user, including wild card characters. Once the structure of found element is returned, an additional method may be executed to return sub-elements based on the parent GUID. The structure of SOLR documents indexed by Livepoint platform allows to perform complex queries based on the syntax of SOLR and depends on the application requirements._
