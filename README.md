@@ -155,7 +155,7 @@ All of the services are stored under the **lscservices** directory of the applic
 While the structure of the service file may be any acceptable Javascript code, the following signature must be followed for all method which are exposed via _endpoints.js_ file. 
 
 ```javascript
-	exposedFunction: function(context, callback) {}
+exposedFunction: function(context, callback) {}
 ```
 
 The **context** variable holds the functions, variables, and request object exposed by the IIS module. This includes driver for AF, PI, logging functionality of the platform, and envrionment variables. The **callback** is a function with signature of  **(err,result)**. If the service was executed successfully, the _err_ variable should be null, similar to most of the callbacks within JavaScript modules. 
@@ -169,9 +169,51 @@ When LSC service is executed as POST (preferred method) from the client side of 
 The context object exposes an object named **log** which provides logging capabilities directly to platform's logs. The log object has several functions corresponding to logging level. The following code outlines the use of logging object: 
 
 ```javascript
-	var log = context.log;
-	log.info('info only');
-	log.error('error only');
-	log.debug('debug only');
+var log = context.log;
+log.info('info only');
+log.error('error only');
+log.debug('debug only');
 ```
 
+## AF / PI Method Invocation
+
+As described in earlier section, the LSC services provide access to PI / AF drivers used for accessing the tag data, event frames, and elements. The supported methods including invocation requests and responses are outline in driver documentation and should be familiar to the develop prior to writing LSC services for such data access. The following section will provide a simple example of retrieving the element tree from AF as well as pulling the data from AF attributes using the AF Driver. 
+
+_NOTE: An existing and available AF database should be accessible by the developer's machine or the machine the LSC services are executed from. Since AF driver follows the security patterns of Windows impersonation, the account running the code must be configured to have correct access, else the error message will return trying to access any of the methods._
+
+### AF Element Tree
+
+The follownig code is an LSC exposes function which retrieves the entire element tree from specified server and database. 
+
+```javascript
+var PIFunctions = context.PI;
+var AFFunctions = context.AF;
+
+var search_request = {
+	ID: "18",
+	EnableLog: false,
+	Server: "localhost",
+	Database: "LPX_ITMonitoring",
+	LoadToDepth: 0,
+	ReturnFullPath: false,
+	ReturnRoot: false,
+	ReturnAttributes: 'All',
+
+	SearchTree: true, 
+	SortOrder: 'Descending',
+	ElementFilters: [{ Name: '*'}],
+
+	ElementFields: ["Name", 'Guid', 'HasChildren', 'HasAttributes', 'ParentGuid', 'Parents', 'Security'],
+	AttributeFields: ['Name', 'DataReference', 'Value', 'State','IsConfigured', 'HasChildren', 'OwnerGuid', 'OwnerType', 'UOM', 'EngUnits']
+};
+
+AFFunctions.FindElements(search_request, function(err, res) {
+	callback(err, {status:200, response: res});
+});
+```
+
+In the example above, the **res** object is the json object representing the driver data in the specified format. Please see the driver documentation for complete structure _or_ example the functionality of the example application. 
+
+_NOTE: The following code assumes success of function invocation. However, the **res** element may return an interal error with description and error stack. In general, the AF function error are handled on the client side for easier debugging and more information, but the developer may choose to example the **res** object and perform additional error logging from within the LSC service._
+
+## Access to Indexing
