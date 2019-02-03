@@ -37,7 +37,7 @@ _NOTE: When running watch / reload under IIS, the platform must start via IIS, n
 
 As previously noted the watch and reload feature performs monitoring and automatic re-initialization of the application for most of the files under the application directly. These files include: controllers, services, policies, routes, angular, static files such as CSS and HTML, and layout views for EJS. The watch DOES not monitor for the following: files added under server-side components (controller, services, policies). When you add a new server side specific files, you must perform initialization as described above.
 
-### LSC Services 
+### LSC Services Overview
 
 LSC Services are special services that run in the context of IIS module. Regardless if the watch is enabled, these services are not monitored the same way. In order to enable watch and reload of LSC services, a command must be executed via URL GET in order to notify the platform that LSC services must be reloaded, not cached. Navigate to logged in core UI screen and executed the following get request within the browser (this must be performed only when the platform is running under IIS mode): 
 
@@ -131,4 +131,47 @@ this.navReady.emit("service:filter-modify", someData);
 
 ### LSC Service
 
+LSC services are JavaScript services executed under the context of IIS module, which allows for special operations to be performed such as impersonation and use of .NET compiled components provided by default such as (AF and PI driver) as well as custom modules via Edge.js library. 
+
+#### Service Configuration
+
+All of the services are stored under the **lscservices** directory of the application structure. However, the services are not loaded automatically and must be configured via _endpoints.js_ file stored under **config** directory of the application. The file provides a json array structure with absolute path of the service method and associated method within the LSC service to be executed. 
+
+```javascript
+[
+	{
+		"url" : "/lsc/example/test-lsc",
+		"method" : "TestService.testFunction"
+	}, 
+	{
+		"url" : "/lsc/example/get-data",
+		"method" : "TestService.getAttributeData"
+	}
+]
+```
+
+#### Service Method Signature
+
+While the structure of the service file may be any acceptable Javascript code, the following signature must be followed for all method which are exposed via _endpoints.js_ file. 
+
+```javascript
+	exposedFunction: function(context, callback) {}
+```
+
+The **context** variable holds the functions, variables, and request object exposed by the IIS module. This includes driver for AF, PI, logging functionality of the platform, and envrionment variables. The **callback** is a function with signature of  **(err,result)**. If the service was executed successfully, the _err_ variable should be null, similar to most of the callbacks within JavaScript modules. 
+
+#### Request Body
+
+When LSC service is executed as POST (preferred method) from the client side of the application, the JSON object passed to the service is contained in the **body** property of the context in the form of JSON object. Once executed, the developer may use this property to get the request parameters to the service and perform necessary action. 
+
+#### Logging to Platform Logs
+
+The context object exposes an object named **log** which provides logging capabilities directly to platform's logs. The log object has several functions corresponding to logging level. The following code outlines the use of logging object: 
+
+```javascript
+	var log = context.log;
+	log.info('info only');
+	log.error('error only');
+	log.debug('debug only');
+```
 
