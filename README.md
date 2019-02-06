@@ -301,3 +301,29 @@ _NOTE: The example application includes the call to this function as the first c
 The data retrieval above is part of the example application to plot attribute values to a simple line chart provided by Chart.js library (part of the example application). The example shows how to use the basic functionality of Chart.js library as well as provide example (commented out) structure of response returned from the LSC service call to attribute data. Please refer to **hasChartData** function of _dashboard-home.component.ts_ file for complete code. 
 
 The example combines above sections to perform a search based on indexed data with use of **ElementSearch** component located in _elementsearch.component.ts_ file. Once the data has be found by the user, the element containing attributes may be selected to populate attribute list. Clicking on a single attribute will execute the call to LSC service to perform AF attribute data retrieval and return the result to be plotted into the line chart provided by Chart.js. 
+
+## Application Walkthrough
+
+The following sections provides a walkthrough of the application installation and usage. The application skeleton included in this repository includes the neccesary structure out of the box.
+
+_REQUIRED: Prior to installation the application make to have a Livepoint X4 envrionment setup and ready, including SOLR indexed data and access to AF server use for pulling the data from AF attributes._
+
+### Step 1: Application Installation
+
+To install the application, place the content of the repository into a new folder named **example** at the root of _apps_ directory of the platform installation. The name of the folder is important since the application is configured to use the **example** as application name which includes the path to required files. If you want to rename the application, please refere to #application-setup section of this manual for detailed explanation on application naming. 
+
+### Step 2: Application Configuration
+
+Navigate to config folder inside of your application and open _settings.js_ file.  Here you will see the application naming and description which may be configured in the format of Javascript properties. In addition, make sure to specify the correct name  of the indexing service (defined by **indexServer** property) if you are to use the example SOLR configuration. If  the name of the application changed, make sure to open _policies.js_ file and change the path to existing policies (outlined in the Application Setup section of this manual).
+
+### Step 3: Compile Typescript 
+
+While the application includes the Javascript files, changing those files requires compilation of Typescript into Javascript as well as the _watch_ functionality on the **tsc** command to constantly monitor and compile file changes. In roder to do this, open a new console window at the directory "example/assets/app". This directory includes all of the Typescript files for the application. Once opened, execute the following command to tell the compiler to watch for changes on Typescript files (the first run will also compile the existing files): **tsc -w**. You should see a message for successfull compilation without 0 errors. 
+
+### Step 4: Initialization
+
+Initialize the platform by running the **node app.js -init** command. This will copy the necessary application files and compile the structure of the application in preparation for development. Once initialize is complete, the platform is ready to be started. Please note the way you want to start the platform based on the development needs. If you are using LSC (AF functionality for example), you must start the platform under the IIS. If LSC functionality is not included into development, the application may be started from command line for development purposes. To activally develop against the platform, please include the **watch** functionality described in the following section: #application-watch-and-reload.
+
+### Step 5: Test the application
+
+Once started, please test the application by navigating to the url and clicking the application name from the list. The application structure should load and screen presented with SOLR search. Clicking the button to open the SOLR search screen, perform a query of elements indexed within the SOLR server to verify the functionality is working. You may now develop required functionality on top of the application assuming all the **watch** has be enabled for both Typescript and Application files. 
