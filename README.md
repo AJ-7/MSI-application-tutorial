@@ -310,7 +310,7 @@ _REQUIRED: Prior to installation the application make to have a Livepoint X4 env
 
 ### Step 1: Application Installation
 
-To install the application, place the content of the repository into a new folder named **example** at the root of _apps_ directory of the platform installation. The name of the folder is important since the application is configured to use the **example** as application name which includes the path to required files. If you want to rename the application, please refere to #application-setup section of this manual for detailed explanation on application naming. 
+To install the application, place the content of the repository into a new folder named **example** at the root of _apps_ directory of the platform installation. The name of the folder is important since the application is configured to use the **example** as application name which includes the path to required files. If you want to rename the application, please refer to [Application Setup](#application-setup) section of this manual for detailed explanation on application naming. 
 
 ### Step 2: Application Configuration
 
@@ -322,7 +322,7 @@ While the application includes the Javascript files, changing those files requir
 
 ### Step 4: Initialization
 
-Initialize the platform by running the **node app.js -init** command. This will copy the necessary application files and compile the structure of the application in preparation for development. Once initialize is complete, the platform is ready to be started. Please note the way you want to start the platform based on the development needs. If you are using LSC (AF functionality for example), you must start the platform under the IIS. If LSC functionality is not included into development, the application may be started from command line for development purposes. To activally develop against the platform, please include the **watch** functionality described in the following section: #application-watch-and-reload.
+Initialize the platform by running the **node app.js -init** command. This will copy the necessary application files and compile the structure of the application in preparation for development. Once initialize is complete, the platform is ready to be started. Please note the way you want to start the platform based on the development needs. If you are using LSC (AF functionality for example), you must start the platform under the IIS. If LSC functionality is not included into development, the application may be started from command line for development purposes. To activally develop against the platform, please include the **watch** functionality described in the following section: [Application Watch and Reload](#application-watch-and-reload).
 
 ### Step 5: Test the application
 
